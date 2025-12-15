@@ -1,24 +1,25 @@
 import React, { useState } from 'react'
-import Navbar from '../../components/Navbar'
+
 import { Link } from 'react-router-dom'
 import PasswordInput from '../../components/Input/PasswordInput'
 import { validateEmail } from '../../utils/helper'
+import Navbar from '../../components/Navbar/Navbar'
 
 const Login = () => {
 
-  const [email ,setemail] = useState("");
-  const [password , setpassword] = useState("");
-  const [error , seterror]= useState(null);
+  const [email ,setEmail] = useState("");
+  const [password , setPassword] = useState("");
+  const [error , setError]= useState(null);
 
   const handleLogin = (e) =>{
     e.preventDefault() ;
 
     if(!validateEmail(email)){
-      seterror("Invalid email format");
+      setError("Invalid email format");
 
       return;
     }
-    seterror (null);
+    setError (null);
   }
 
 
@@ -33,11 +34,11 @@ const Login = () => {
 
       <input type="text" placeholder='Email' className='input-box'
        value={email} 
-       onChange={(e)=> setemail(e.target.value)}/>
+       onChange={(e)=> setEmail(e.target.value)}/>
 
       <PasswordInput
       value={password} 
-      onChange={(e)=> setpassword(e.target.value)}
+      onChange={(e)=> setPassword(e.target.value)}
       />
 
       {  error && (<p className='text-sm text-red-500 mb-3'>{error}</p>
