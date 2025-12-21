@@ -1,26 +1,73 @@
 import React, { useState } from "react";
 import TagInput from "../../components/Input/Taginput";
 import { MdClose } from "react-icons/md";
+import  axiosInstance  from '../../utils/axiosInstance'
 
-const AddEditNotes = ({ onClose, noteData , type }) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState([]);
+
+const AddEditNotes = ({ onClose, noteData ,getAllNotes, type }) => {
+  const [title, setTitle] = useState(noteData?.title || "");
+  const [content, setContent] = useState(noteData?.content || "");
+  const [tags, setTags] = useState(noteData?.tags || []);
 
 const [error , setError] = useState(null);
 
 
 //add Note
 
-const addNewNote = async ()=>{
+const addNewNote = async () => {
+  console.log("addNewNote CALLED");
 
-}
+  try {
+    console.log("SENDING NOTE DATA", { title, content, tags });
+
+    const response = await axiosInstance.post(
+      "/add-note",
+      {
+        title,
+        content,
+        tags: Array.isArray(tags) ? tags : [],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (response.data?.note) {
+      getAllNotes();
+      onClose();
+    }
+  } catch (error) {
+    console.error("ADD NOTE ERROR:", error);
+    setError(error.response?.data?.message || "Add note failed");
+  }
+};
+
+
+
 //edit Note
 const editNote = async ()=>{
-
+  const noteId = noteData._id
+try{
+  const res = await axiosInstance.put(`/edit-note/${noteId}`,{
+    title,
+    content,
+    tags,
+  })
+  if(res.data && res.data.note){
+    getAllNotes()
+    onClose()
+  }
+ }catch(error){
+   if(error.res && error.res.data && error.res.data.message){
+    setError(error.res.data.message)
+   }
+ }
 }
 
 const handleAddNote = () => {
+  console.log('clicked')
   if(!title){
     setError('Title is required');
     return;
@@ -78,8 +125,8 @@ const handleAddNote = () => {
         <TagInput tags={tags} setTags={setTags} />
       </div>
 {error && <p className="text-red-500 text-xs pt-4">{error}</p>  }
-      <button className="btn-primary font-medium mt-5 p-3 " onClick={() => handleAddNote()}>
-        ADD
+      <button className="btn-primary font-medium mt-5 p-3 " onClick={ handleAddNote}>
+        {type === 'edit' ? 'UPDATE' : 'ADD'}
       </button>
     </div>
   );

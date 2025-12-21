@@ -9,9 +9,9 @@ import SingUp from "./page/SingUp/SingUp";
 const App = () => {
   return (
    <Routes>
-    <Route path="/" element={<Home/>} />
+    <Route path="/dashboard" element={<Home/>} />
     <Route path="/login" element={<Login/>} />
-    <Route path="/singup" element={<SingUp/>} />
+    <Route path="/signup" element={<SingUp/>} />
    </Routes>
   );
 };

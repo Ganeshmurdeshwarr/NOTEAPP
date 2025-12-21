@@ -1,9 +1,10 @@
 import React from "react";
 
 import PasswordInput from "../../components/Input/PasswordInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate,  } from "react-router-dom";
 import { validateEmail } from "../../utils/helper";
 import Navbar from "../../components/Navbar/Navbar";
+import axiosInstance from "../../utils/axiosInstance.JS";
 
 const SingUp = () => {
 
@@ -11,6 +12,7 @@ const SingUp = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState(null);
+  const navigate = useNavigate()
 
 
   const handleSingUp = async (e) => {
@@ -28,11 +30,34 @@ const SingUp = () => {
       return
     }
     setError('')
+
+//SingUp Call
+
+    try{
+   const res = await axiosInstance.post('/create-account' ,{
+    fullName:name,
+    email:email,
+    password: password,
+   });
+
+   //Handle success response
+ 
+   if(res.data && res.data.accessToken){
+    localStorage.setItem('token' , res.data.accessToken)
+    navigate('/')
+   }
+  }catch(error){
+  if(error.response && error.response.data && error.response.data.message){
+    setError(error.response.data.message);
+  }else{
+    setError("Something went wrong. Please try again later.");
+  }
+}
   };
   return (
     <>
       <Navbar/>
-      <div className="flex item-center justify-center mt-28 ">
+      <div className="flex items-center justify-center mt-28 ">
         <div className="w-96 border rounded bg-white px-7 py-10 ">
           <form onSubmit={handleSingUp}>
             <h4 className="text-2xl font-semibold mb-7">SignUp</h4>
